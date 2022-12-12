@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS SAM CLI Nested Stack for Auto Dependency Layer Creation
+Metadata:
+  SamCliInfo: 1.66.0
+  key: AWS SAM CLI sync command
+Outputs:
+  Function266860bebDepLayer:
+    Value:
+      Ref: Function266860bebDepLayer
+  Function86408593DepLayer:
+    Value:
+      Ref: Function86408593DepLayer
+Resources:
+  Function266860bebDepLayer:
+    Metadata:
+      CreatedBy: AWS SAM CLI sync command
+    Properties:
+      CompatibleRuntimes:
+      - python3.9
+      ContentUri: /Users/takuya-yn/AWS/app-composer-sample/.aws-sam/auto-dependency-layer/Function266860bebDepLayer
+      Description: Auto created layer for dependencies of function Function2
+      LayerName: app-composer05b2e8f7-Function266860beb-DepLayer
+      RetentionPolicy: Delete
+    Type: AWS::Serverless::LayerVersion
+  Function86408593DepLayer:
+    Metadata:
+      CreatedBy: AWS SAM CLI sync command
+    Properties:
+      CompatibleRuntimes:
+      - python3.9
+      ContentUri: /Users/takuya-yn/AWS/app-composer-sample/.aws-sam/auto-dependency-layer/Function86408593DepLayer
+      Description: Auto created layer for dependencies of function Function
+      LayerName: app-composer05b2e8f7-Function86408593-DepLayer
+      RetentionPolicy: Delete
+    Type: AWS::Serverless::LayerVersion
+Transform: AWS::Serverless-2016-10-31

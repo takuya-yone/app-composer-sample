@@ -11,12 +11,6 @@ Resources:
         AllowMethods: '''*'''
         AllowHeaders: '''*'''
         AllowOrigin: '''*'''
-      Auth:
-        DefaultAuthorizer: CognitoAuthorizer
-        AddDefaultAuthorizerToCorsPreflight: false
-        Authorizers:
-          CognitoAuthorizer:
-            UserPoolArn: !GetAtt UserPool.Arn
       DefinitionBody:
         openapi: '3.0'
         info: {}
@@ -55,9 +49,13 @@ Resources:
         Variables:
           TOPIC_NAME: !GetAtt Topic.TopicName
           TOPIC_ARN: !Ref Topic
+          TABLE_NAME: !Ref Table
+          TABLE_ARN: !GetAtt Table.Arn
       Policies:
         - SNSPublishMessagePolicy:
             TopicName: !GetAtt Topic.TopicName
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
   FunctionLogGroup:
     Type: AWS::Logs::LogGroup
     DeletionPolicy: Retain
@@ -84,10 +82,11 @@ Resources:
       Layers:
         - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:16
       Events:
-        Queue:
-          Type: SQS
+        Table:
+          Type: DynamoDB
           Properties:
-            Queue: !GetAtt Queue.Arn
+            Stream: !GetAtt Table.StreamArn
+            StartingPosition: TRIM_HORIZON
             BatchSize: 1
       Environment:
         Variables:
@@ -119,6 +118,18 @@ Resources:
                 aws:SourceArn: !Ref Topic
       Queues:
         - !Ref Queue
+  Table:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
   Bucket:
     Type: AWS::S3::Bucket
     Properties:
